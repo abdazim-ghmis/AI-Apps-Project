@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>قائمة التطبيقات</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+
+      <!--لتنسيق الصفحة   Bootstrab من css رابط  -->
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .custom-card-image{
+            height: 200px;
+            background-size:cover ;
+            background-position: center;
+        }
+    </style>
+
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="myFunctions.js"></script>
+</head>
+<body>
+  <div class="container">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-secondary shadow">
+      <a class="navbar-brand" href="home.html">الرئيسية</a>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav  " >
+            <li class="nav-item ">
+              <a class="nav-link active"    aria-current="page" href="aboutUs.html">من نحن</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="apps.html">قائمة التطبيقات</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+  
+  <header class="container">
+      <h1>قائمة التطبيقات</h1>
+  </header>
+  <main class="container card">
+    <section>
+      <h2>التطبيقات المحفوظة</h2><br>
+      <div> 
+        <a href="add_app.html"  type="button" class="btn btn-success" >إضافة تطبيق</a>     
+      </div><br>
+      <table id="appsTable" class="striped">
+        <thead>
+          <tr>
+            <th>الشعار</th>
+            <th>اسم التطبيق</th>
+            <th>الشركة</th>
+            <th>المجال</th>
+            <th>مجاني؟</th>
+            <th>الموقع</th>
+            <th>تفاصيل</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+
+  </main>
+
+  <script>
+  $(function(){
+    function renderTable(){
+      const key = 'f24_apps';
+      const arr = JSON.parse(localStorage.getItem(key) || '[]');
+      const $tbody = $('#appsTable tbody');
+      $tbody.empty();
+      if(arr.length === 0){
+        $tbody.append('<tr><td colspan="7" class="muted">لا توجد تطبيقات محفوظة حتى الآن. أضف تطبيقاً عبر "إضافة تطبيق".</td></tr>');
+        return;
+      }
+      arr.forEach(a => {
+        const logo = a.logo || 'assets/placeholder.png';
+        const tr = $(`
+          <tr>
+            <td><img src="${logo}" alt="logo" class="logo"></td>
+            <td>${escapeHtml(a.name)}</td>
+            <td>${escapeHtml(a.company)}</td>
+            <td>${escapeHtml(a.domain)}</td>
+            <td>${a.isFree ? 'نعم' : 'لا'}</td>
+            <td><a href="${a.website}" target="_blank">رابط</a></td>
+            <td><button  type="button" style= "font-size: 10px;padding:2px 4px;width: 110px;height: 25px;" class="toggle-details  btn btn-warning"  data-id="${a.id}" >عرض/إخفاء التفاصيل</button></td>
+          </tr>
+        `);
+        $tbody.append(tr);
+        const detailsTr = $(`
+          <tr class="details-row" data-id="${a.id}" style="display:none;">
+            <td colspan="7">
+              <div class="details-box">
+                <strong>وصف:</strong> ${escapeHtml(a.shortDesc || '')}<br>
+                <strong>وسائط:</strong> ${a.media && a.media.image ? '<img src="'+a.media.image+'" class="media-thumb">' : 'لا توجد'} 
+                ${a.media && a.media.video ? ' | <em>فيديو مرفق</em>' : ''}
+                ${a.media && a.media.audio ? ' | <em>صوت مرفق</em>' : ''}
+              </div>
+            </td>
+          </tr>
+        `);
+        $tbody.append(detailsTr);
+      });
+    }
+
+    function escapeHtml(unsafe) {
+      if(!unsafe) return '';
+      return String(unsafe).replace(/[&<"'>]/g, function(m){ return {'&':'&amp;','<':'&lt;','"':'&quot;',"'":'&#039;','>':'&gt;'}[m]; });
+    }
+
+    // toggle details
+    $('#appsTable').on('click', '.toggle-details', function(){
+      const id = $(this).data('id');
+      const $row = $('.details-row[data-id="'+id+'"]');
+      $row.toggle();
+    });
+
+    // initial rendering
+    renderTable();
+
+    // listen to storage events to update table if add_app saved and redirected here.
+    window.addEventListener('storage', function(e){
+      if(e.key === 'f24_apps') renderTable();
+    });
+  });
+  </script>
+</body>
+</html>

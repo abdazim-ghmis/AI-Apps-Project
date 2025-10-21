@@ -1,0 +1,42 @@
+
+:root{
+  --bg:#f6f8fa;
+  --card:#ffffff;
+  --accent:#0b5ed7;
+  --muted:#666;
+}
+*{box-sizing:border-box;font-family: 'Segoe UI', Tahoma, Arial, sans-serif;}
+
+body{background:var(--bg);margin:0;padding:0;color:#111;}
+
+.container{ max-width:980px;margin:18px auto;padding:12px;}
+
+header nav a{color:var(--accent);text-decoration:none;margin:0 6px;}
+
+.card{background:var(--card);border-radius:8px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,0.06);}
+
+.logo{width:48px;height:48px;object-fit:cover;border-radius:6px;}
+
+.media-thumb{width:120px;height:80px;object-fit:cover;border-radius:6px;margin-top:8px;}
+
+.striped thead{background:#efefef;}
+
+.striped th, .striped td{padding:10px;border-bottom:1px solid #eee;text-align:center;}
+
+.muted{color:var(--muted);}
+
+.details-box{background:#fbfbff;padding:10px;border-radius:6px;border:1px solid #eee;}
+
+input, select, textarea{width:100%;padding:8px;margin:6px 0;border-radius:6px;border:1px solid #ddd;}
+
+button{background:var(--accent);color:white;padding:8px 12px;border-radius:6px;border:none;cursor:pointer;
+
+}
+
+button:disabled{opacity:0.6}
+
+.form-actions{display:flex;gap:8px;}
+
+@media (min-width:760px){
+  .form-actions{justify-content:flex-start;}
+}

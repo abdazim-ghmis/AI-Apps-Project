@@ -1,0 +1,26 @@
+{
+  "f24_apps": [
+    {
+      "id": "app_sample_1",
+      "name": "SmartTutor",
+      "company": "EduLabs",
+      "website": "https://example.com/smarttutor",
+      "isFree": true,
+      "domain": "Education",
+      "shortDesc": "AI-powered tutoring assistant for students.",
+      "logo": "assets/placeholder.png",
+      "media": {}
+    },
+    {
+      "id": "app_sample_2",
+      "name": "ShopMate",
+      "company": "CommerceAI",
+      "website": "https://example.com/shopmate",
+      "isFree": false,
+      "domain": "E-Commerce",
+      "shortDesc": "Recommender system for online stores.",
+      "logo": "assets/placeholder.png",
+      "media": {}
+    }
+  ]
+}

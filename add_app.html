@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>إضافة تطبيق</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+
+    <!--لتنسيق الصفحة   Bootstrab من css رابط  -->
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="myFunctions.js"></script>
+</head>
+<body>
+  <div class="container">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-secondary shadow">
+      <a class="navbar-brand" href="home.html">الرئيسية</a>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+      </div>
+    </nav>
+  </div>
+
+  <header class="container">
+    <h1>إضافة تطبيق جديد</h1>
+  </header>
+
+  <main class="container card">
+    <form id="appForm" novalidate>
+      <label>اسم التطبيق (إنجليزي، أحرف فقط، بدون فراغات):</label>
+      <input id="appName" name="appName" required placeholder="MyApp">
+
+      <label>اسم الشركة (إنجليزي، أحرف ومسافات مسموح):</label>
+      <input id="companyName" name="companyName" required placeholder="Dev Company">
+
+      <label>موقع التطبيق (URL):</label>
+      <input id="website" name="website" required placeholder="https://example.com">
+
+      <label>مجاني؟</label>
+      <select id="isFree" name="isFree">
+        <option value="true">نعم</option>
+        <option value="false">لا</option>
+      </select>
+
+      <label>المجال:</label>
+      <select id="domain" required>
+        <option value="">--اختر المجال--</option>
+        <option value="Education">Education</option>
+        <option value="E-Commerce">E-Commerce</option>
+        <option value="Robotics">Robotics</option>
+        <option value="Healthcare">Healthcare</option>
+        <option value="Productivity">Productivity</option>
+      </select>
+
+      <label>شرح مختصر (لا يقل عن 20 حرف):</label>
+      <textarea id="desc" rows="4" placeholder="Short description..."></textarea>
+
+      <label>رفع شعار (اختياري):</label><br>
+      <label>ملاحظة : يفضل رفع صورة بدقة منخفضة من اجل السماحة </label>
+      <input id="logo" type="file" accept="image/*">
+
+      <!-- بعد الإرسال سيتم إعادة التوجيه إلى صفحة "قائمة التطبيقات -->
+      <div class="form-actions">
+        <button type="submit">إرسال</button>
+        <button type="reset">إعادة</button>
+      </div>
+
+      <div id="messages" class="muted"></div>
+    </form>
+  </main>
+
+  <script>
+  $(function(){
+    // Validation helpers (also present in myFunctions.js but included here for immediate UX)
+    function validAppName(v){ return /^[A-Za-z]+$/.test(v); }
+    function validCompany(v){ return /^[A-Za-z\s]+$/.test(v); }
+    function validURL(v){
+      try { new URL(v); return true; } catch(e){ return false; }
+    }
+
+    $('#appForm').on('submit', function(e){
+      e.preventDefault();
+      const name = $('#appName').val().trim();
+      const company = $('#companyName').val().trim();
+      const website = $('#website').val().trim();
+      const domain = $('#domain').val();
+      const isFree = $('#isFree').val() === 'true';
+      const desc = $('#desc').val().trim();
+
+      let msgs = [];
+      if(!validAppName(name)) msgs.push('اسم التطبيق يجب أن يكون أحرف إنجليزية فقط وبدون فراغات.');
+      if(!validCompany(company)) msgs.push('اسم الشركة يجب أن يحتوي أحرف إنجليزية ومسافات فقط، بدون أرقام.');
+      if(!validURL(website)) msgs.push('أدخل رابط موقع صحيح (مثال: https://example.com).');
+      if(!domain) msgs.push('اختر مجالًا.');
+      if(desc.length < 20) msgs.push('الشرح المختصر يجب أن يكون على الأقل 20 حرفاً.');
+
+      if(msgs.length){
+        $('#messages').html(msgs.map(m => '<div>'+m+'</div>').join(''));
+        return;
+      }
+
+      // handle logo file (convert to data URL)
+      const fileInput = document.getElementById('logo');
+      if(fileInput.files && fileInput.files[0]){
+        const reader = new FileReader();
+        reader.onload = function(ev){
+          const logoData = ev.target.result;
+          saveApp({name, company, website, domain, isFree, shortDesc: desc, logo: logoData});
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+      } else {
+        saveApp({name, company, website, domain, isFree, shortDesc: desc, logo: 'assets/placeholder.png'});
+      }
+    });
+
+    function saveApp(appData){
+      const key = 'f24_apps';
+      const arr = JSON.parse(localStorage.getItem(key) || '[]');
+      const id = 'app_' + Date.now();
+      const obj = Object.assign({id}, appData);
+      arr.push(obj);
+      localStorage.setItem(key, JSON.stringify(arr));
+      // also trigger storage event (for some browsers when same tab redirect doesn't fire storage)
+      localStorage.setItem('f24_last_added', id);
+      // redirect to apps.html
+      window.location.href = 'apps.html';
+    }
+  });
+  </script>
+</body>
+</html>
